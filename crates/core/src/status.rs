@@ -8,8 +8,8 @@ use crate::{ffi, Result};
 use std::ffi::CStr;
 use std::fmt;
 
-pub const PLCTAG_STATUS_OK: i32 = ffi::PLCTAG_STATUS_OK as i32;
-pub const PLCTAG_STATUS_PENDING: i32 = ffi::PLCTAG_STATUS_PENDING as i32;
+pub const PLCTAG_STATUS_OK: i32 = ffi::plctag_error_code_t::PLCTAG_STATUS_OK as i32;
+pub const PLCTAG_STATUS_PENDING: i32 = ffi::plctag_error_code_t::PLCTAG_STATUS_PENDING as i32;
 
 /// plc tag error code representations
 #[derive(Copy, Clone)]
@@ -55,7 +55,7 @@ impl Status {
     #[inline(always)]
     pub fn is_timeout(&self) -> bool {
         match self {
-            Status::Err(ref rc) => *rc == ffi::PLCTAG_ERR_TIMEOUT,
+            Status::Err(ref rc) => *rc == ffi::plctag_error_code_t::PLCTAG_ERR_TIMEOUT,
             _ => false,
         }
     }

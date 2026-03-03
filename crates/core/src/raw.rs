@@ -101,7 +101,7 @@ impl RawTag {
         loop {
             if let Some(v) = timeout {
                 if start.elapsed() > v {
-                    return Status::Err(ffi::PLCTAG_ERR_TIMEOUT);
+                    return Status::Err(ffi::plctag_error_code_t::PLCTAG_ERR_TIMEOUT);
                 }
             }
 
