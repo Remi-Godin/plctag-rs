@@ -49,7 +49,14 @@ fn main() {
         }
         let out_dir = config.build();
         eprintln!("cmake build out dir: {:?}", &out_dir);
-        let header_file = source_dir.join("src").join("lib").join("libplctag.h");
+        // let header_file = source_dir.join("src").join("lib").join("libplctag.h");
+        let header_file = out_dir.join("include").join("libplctag.h");
+
+        let header_file = if header_file.exists() {
+            header_file
+        } else {
+            source_dir.join("src").join("lib").join("libplctag.h")
+        };
         println!("cargo:rerun-if-changed={}", header_file.display());
         (out_dir, header_file.display().to_string())
     };
