@@ -46,6 +46,7 @@ fn main() {
         config.define("BUILD_EXAMPLES", "0");
         if is_static {
             config.static_crt(true);
+            config.define("LIBPLCTAG_STATIC", "ON");
         }
         let out_dir = config.build();
         eprintln!("cmake build out dir: {:?}", &out_dir);
