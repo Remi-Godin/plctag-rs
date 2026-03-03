@@ -126,7 +126,7 @@ pub fn log_adapt() {
     unsafe {
         ffi::plc_tag_unregister_logger();
         let rc = ffi::plc_tag_register_logger(Some(log_route));
-        debug_assert_eq!(rc, ffi::PLCTAG_STATUS_OK as i32);
+        debug_assert_eq!(rc, ffi::plctag_error_code_t::PLCTAG_STATUS_OK as i32);
     }
 }
 

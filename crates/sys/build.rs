@@ -80,7 +80,11 @@ fn main() {
         .header(header_file)
         .allowlist_var("PLCTAG_.*")
         .allowlist_function("plc_tag_.*")
-        .parse_callbacks(Box::new(bindgen::CargoCallbacks))
+        .parse_callbacks(Box::new(bindgen::CargoCallbacks::new()))
+        .allowlist_type("plctag_error_code_t")
+        .constified_enum_module("plctag_error_code_t")
+        .allowlist_type("plctag_event_t")
+        .constified_enum_module("plctag_event_t")
         .generate()
         .expect("Unable to generate bindings");
     let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());

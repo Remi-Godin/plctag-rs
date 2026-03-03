@@ -9,7 +9,7 @@ use futures_util::{
     future::Future,
     task::{AtomicWaker, Context, Poll},
 };
-use plctag_core::ffi::PLCTAG_ERR_NOT_FOUND;
+use plctag_core::ffi::plctag_error_code_t::PLCTAG_ERR_NOT_FOUND;
 #[cfg(feature = "value")]
 use plctag_core::{Decode, Encode};
 use std::{
@@ -18,10 +18,12 @@ use std::{
     sync::atomic::{AtomicBool, AtomicI32, AtomicU8, Ordering},
 };
 
-const PLCTAG_EVENT_CREATED: i32 = plctag_core::ffi::PLCTAG_EVENT_CREATED as i32;
-const PLCTAG_EVENT_READ_COMPLETED: i32 = plctag_core::ffi::PLCTAG_EVENT_READ_COMPLETED as i32;
-const PLCTAG_EVENT_WRITE_COMPLETED: i32 = plctag_core::ffi::PLCTAG_EVENT_WRITE_COMPLETED as i32;
-const PLCTAG_EVENT_DESTROYED: i32 = plctag_core::ffi::PLCTAG_EVENT_DESTROYED as i32;
+const PLCTAG_EVENT_CREATED: i32 = plctag_core::ffi::plctag_event_t::PLCTAG_EVENT_CREATED as i32;
+const PLCTAG_EVENT_READ_COMPLETED: i32 =
+    plctag_core::ffi::plctag_event_t::PLCTAG_EVENT_READ_COMPLETED as i32;
+const PLCTAG_EVENT_WRITE_COMPLETED: i32 =
+    plctag_core::ffi::plctag_event_t::PLCTAG_EVENT_WRITE_COMPLETED as i32;
+const PLCTAG_EVENT_DESTROYED: i32 = plctag_core::ffi::plctag_event_t::PLCTAG_EVENT_DESTROYED as i32;
 
 const TAG_CREATED: u8 = 1;
 const TAG_DESTROYED: u8 = 3;
