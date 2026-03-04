@@ -175,8 +175,8 @@ impl AsyncTag {
     #[inline]
     pub async fn ready(&mut self) -> Result<()> {
         let mut state = self.inner.state.load(Ordering::Acquire);
-        println!("TAG STATUS: {state}");
         loop {
+            println!("TAG STATUS: {state}");
             match state {
                 TAG_DESTROYED => {
                     return Err(Status::Err(PLCTAG_ERR_NOT_FOUND).into());
