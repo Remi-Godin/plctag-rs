@@ -175,6 +175,7 @@ impl AsyncTag {
     #[inline]
     pub async fn ready(&mut self) -> Result<()> {
         let mut state = self.inner.state.load(Ordering::Acquire);
+        println!("TAG STATUS: {state}");
         loop {
             match state {
                 TAG_DESTROYED => {
@@ -183,7 +184,9 @@ impl AsyncTag {
                 TAG_CREATED => {
                     return Ok(());
                 }
-                _ => {}
+                _ => {
+                    println!("UNDEFINED TAG STATUS RESPONSE")
+                }
             }
             self.inner.notified().await;
             state = self.inner.state.load(Ordering::Relaxed);
