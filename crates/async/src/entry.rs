@@ -176,7 +176,6 @@ impl AsyncTag {
     pub async fn ready(&mut self) -> Result<()> {
         let mut state = self.inner.state.load(Ordering::Acquire);
         loop {
-            println!("TAG STATUS 1: {state}");
             match state {
                 TAG_DESTROYED => {
                     return Err(Status::Err(PLCTAG_ERR_NOT_FOUND).into());
@@ -184,9 +183,7 @@ impl AsyncTag {
                 TAG_CREATED => {
                     return Ok(());
                 }
-                _ => {
-                    println!("UNDEFINED TAG STATUS RESPONSE")
-                }
+                _ => {}
             }
             self.inner.notified().await;
             state = self.inner.state.load(Ordering::Relaxed);
