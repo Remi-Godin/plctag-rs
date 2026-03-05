@@ -79,8 +79,6 @@ pub struct PathBuilder {
 impl PathBuilder {
     /// generic attribute.
     /// defining the current debugging level.
-    /// please use [`plc::set_debug_level`](../plc/fn.set_debug_level.html) instead.
-    #[deprecated]
     pub fn debug(&mut self, level: DebugLevel) -> &mut Self {
         self.debug = Some(level);
         self
@@ -238,9 +236,6 @@ impl PathBuilder {
                             .or(Err(Error("path is a number in range [0-255]")))?;
                     }
                     None => return Err(Error("path required")),
-                }
-                if self.elem_size.is_none() {
-                    return Err(Error("element size required"));
                 }
             }
         }
