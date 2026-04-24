@@ -20,7 +20,7 @@ use std::{ffi::OsStr, path::Component};
 fn main() {
     // check if static build in the order of:
     // PLCTAG_STATIC, PLCTAG_DYNAMIC, rustflags: +crt-static
-    let is_static = get_env_bool("LIBPLCTAG_STATIC").unwrap_or(false)
+    let is_static = get_env_bool("LIBPLCTAG_STATIC").unwrap_or(true)
         || get_env_bool("LIBPLCTAG_DYNAMIC").map_or(false, |v| !v)
         || cfg!(target_feature = "crt-static");
 
