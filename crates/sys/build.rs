@@ -42,8 +42,12 @@ fn main() {
             dst_dir
         };
         let mut config = cmake::Config::new(&source_dir);
-        // do not build examples
+        config.profile("Release");
+        config.define("CMAKE_BUILD_TYPE", "Release");
         config.define("BUILD_EXAMPLES", "0");
+        config.define("BUILD_TOOLS", "0");
+        config.define("BUILD_TESTS", "0");
+
         if is_static {
             config.static_crt(true);
             config.define("LIBPLCTAG_STATIC", "ON");
@@ -171,8 +175,6 @@ fn install_lib_files(lib_path: impl AsRef<Path>, out_path: impl AsRef<Path>) {
 
 #[cfg(target_os = "windows")]
 fn find_target_profile_dir<'a>(dir: impl AsRef<Path> + 'a) -> Option<PathBuf> {
-    //out dir looks like ...\plctag-rs\target\debug\build\XXXXX
-    //profile dir looks like ...\plctag-rs\target\debug\
     let target = Some(Component::Normal(OsStr::new("build")));
     let mut dir = dir.as_ref();
     loop {

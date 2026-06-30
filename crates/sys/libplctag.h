@@ -53,15 +53,6 @@ extern "C" {
 #        define LIB_EXPORT extern
 #    endif
 
-// #ifdef LIBPLCTAG_STATIC
-//     #define LIB_EXPORT extern
-// #elif defined(LIBPLCTAGDLL_EXPORTS)
-//     #define LIB_EXPORT __declspec(dllexport)
-//     #error "DLL Export"
-// #else
-//     #define LIB_EXPORT __declspec(dllimport)
-//     #error "DLL Import"
-// #endif
 #else
 #    ifdef LIBPLCTAGDLL_EXPORTS
 #        define LIB_EXPORT __attribute__((visibility("default")))
@@ -171,39 +162,41 @@ LIB_EXPORT void plc_tag_set_debug_level(int debug_level);
  * Each module represents a different subsystem within libplctag and can have its
  * own independent debug level setting.
  *
- * This is the canonical list of module IDs used throughout the library. From this
- * list the module name strings used in the debug functions are derived.
+ * This is the canonical list of module IDs used throughout the library.
  *
  * @note Do not rely on these values remaining constant between library versions
  *       as they will likely be added to in future releases.
  */
 
-/** Debug module IDs - these are 64-bit pre-shifted values for bitmask operations */
+/* Debug module IDs - sequential integer values, used as array indices */
 typedef enum {
-    PLCTAG_MODULE_LIB = (1ULL << 0),
-    PLCTAG_MODULE_INIT = (1ULL << 1),
-    PLCTAG_MODULE_VERSION = (1ULL << 2),
-    PLCTAG_MODULE_UTILS = (1ULL << 3),
-    PLCTAG_MODULE_AB_SESSION = (1ULL << 4),
-    PLCTAG_MODULE_AB_PCCC = (1ULL << 5),
-    PLCTAG_MODULE_AB_CIP = (1ULL << 6),
-    PLCTAG_MODULE_AB_COMMON = (1ULL << 7),
-    PLCTAG_MODULE_AB_EIP_CIP = (1ULL << 8),
-    PLCTAG_MODULE_AB_EIP_CIP_SPECIAL = (1ULL << 9),
-    PLCTAG_MODULE_AB_EIP_LGX_PCCC = (1ULL << 10),
-    PLCTAG_MODULE_AB_EIP_PLC5_PCCC = (1ULL << 11),
-    PLCTAG_MODULE_AB_EIP_PLC5_DHP = (1ULL << 12),
-    PLCTAG_MODULE_AB_EIP_SLC_PCCC = (1ULL << 13),
-    PLCTAG_MODULE_AB_EIP_SLC_DHP = (1ULL << 14),
-    PLCTAG_MODULE_AB_ERROR = (1ULL << 15),
-    PLCTAG_MODULE_OMRON_CONN = (1ULL << 16),
-    PLCTAG_MODULE_OMRON_CIP = (1ULL << 17),
-    PLCTAG_MODULE_OMRON_COMMON = (1ULL << 18),
-    PLCTAG_MODULE_OMRON_STANDARD_TAG = (1ULL << 19),
-    PLCTAG_MODULE_OMRON_RAW_TAG = (1ULL << 20),
-    PLCTAG_MODULE_MODBUS = (1ULL << 21),
-    PLCTAG_MODULE_SYSTEM = (1ULL << 22),
-    PLCTAG_MODULE_PLATFORM = (1ULL << 23)
+    PLCTAG_MODULE_LIB = 0,
+    PLCTAG_MODULE_INIT = 1,
+    PLCTAG_MODULE_VERSION = 2,
+    PLCTAG_MODULE_UTILS = 3,
+    PLCTAG_MODULE_AB_SESSION = 4,
+    PLCTAG_MODULE_AB_PCCC = 5,
+    PLCTAG_MODULE_AB_CIP = 6,
+    PLCTAG_MODULE_AB_COMMON = 7,
+    PLCTAG_MODULE_AB_EIP_CIP = 8,
+    PLCTAG_MODULE_AB_EIP_CIP_SPECIAL = 9,
+    PLCTAG_MODULE_AB_EIP_LGX_PCCC = 10,
+    PLCTAG_MODULE_AB_EIP_PLC5_PCCC = 11,
+    PLCTAG_MODULE_AB_EIP_PLC5_DHP = 12,
+    PLCTAG_MODULE_AB_EIP_SLC_PCCC = 13,
+    PLCTAG_MODULE_AB_EIP_SLC_DHP = 14,
+    PLCTAG_MODULE_AB_ERROR = 15,
+    PLCTAG_MODULE_OMRON_CONN = 16,
+    PLCTAG_MODULE_OMRON_CIP = 17,
+    PLCTAG_MODULE_OMRON_COMMON = 18,
+    PLCTAG_MODULE_OMRON_STANDARD_TAG = 19,
+    PLCTAG_MODULE_OMRON_RAW_TAG = 20,
+    PLCTAG_MODULE_MODBUS = 21,
+    PLCTAG_MODULE_SYSTEM = 22,
+    PLCTAG_MODULE_PLATFORM = 23,
+    PLCTAG_MODULE_AB_CONNECTION = 24,
+    PLCTAG_MODULE_MB_CONNECTION = 25,
+    PLCTAG_MODULE_OMRON_CONNECTION = 26
 } plctag_debug_module_t;
 
 
@@ -211,28 +204,22 @@ typedef enum {
  * @brief Set debug level for a specific module.
  *
  * Allows fine-grained control over debug output by setting the debug level
- * for a specific module. Module names are case-insensitive strings such as:
- * "LIB", "INIT", "VERSION", "UTILS", "AB_SESSION", "AB_PCCC", "AB_CIP", "AB_COMMON",
- * "AB_EIP_CIP", "AB_EIP_CIP_SPECIAL", "AB_EIP_LGX_PCCC", "AB_EIP_PLC5_PCCC", "AB_EIP_PLC5_DHP",
- * "AB_EIP_SLC_PCCC", "AB_EIP_SLC_DHP", "AB_ERROR", "OMRON_CONN", "OMRON_CIP", "OMRON_COMMON",
- * "OMRON_STANDARD_TAG", "OMRON_RAW_TAG", "MODBUS", "SYSTEM", and "PLATFORM".
+ * for a specific module independently of the global debug level.
  *
- * @param module_name Case-insensitive module name string.
+ * @param module Module ID from the plctag_debug_module_t enum.
  * @param debug_level Debug level value (same as plc_tag_set_debug_level()).
- * @return PLCTAG_STATUS_OK on success, PLCTAG_ERR_NOT_FOUND if module name is not recognized.
+ * @return PLCTAG_STATUS_OK on success, PLCTAG_ERR_BAD_PARAM if arguments are out of range.
  */
-LIBPLCTAG_EXPERIMENTAL
-LIB_EXPORT int plc_tag_set_debug_module_level(const char *module_name, int debug_level);
+LIB_EXPORT int plc_tag_set_debug_module_level(plctag_debug_module_t module, int debug_level);
 
 
 /**
  * @brief Get the debug level for a specific module.
  *
- * @param module_name Case-insensitive module name string.
- * @return Current debug level for the specified module, or PLCTAG_ERR_NOT_FOUND if module name is not recognized.
+ * @param module Module ID from the plctag_debug_module_t enum.
+ * @return Current debug level for the specified module.
  */
-LIBPLCTAG_EXPERIMENTAL
-LIB_EXPORT int plc_tag_get_debug_module_level(const char *module_name);
+LIB_EXPORT int plc_tag_get_debug_module_level(plctag_debug_module_t module);
 
 
 /**
@@ -240,35 +227,7 @@ LIB_EXPORT int plc_tag_get_debug_module_level(const char *module_name);
  *
  * @return Current global debug level set by plc_tag_set_debug_level().
  */
-LIBPLCTAG_EXPERIMENTAL
 LIB_EXPORT int plc_tag_get_debug_level(void);
-
-
-/**
- * @brief Convert a debug module name to a module ID.
- *
- * Takes a string like "AB_SESSION" or "OMRON_CONN" and returns
- * the corresponding module ID. Module names are case-insensitive.
- *
- * @param module_name Case-insensitive module name string.
- * @return Corresponding module ID bitmask, or 0 if the module name is not recognized.
- */
-LIBPLCTAG_EXPERIMENTAL
-LIB_EXPORT uint64_t plc_tag_debug_module_id(const char *module_name);
-
-
-/**
- * @brief Convert a debug level name to a debug level ID.
- *
- * Takes a string like "ERROR", "DEBUG_DETAIL", "SPEW", etc.
- * and returns the corresponding debug level ID. Level names are case-insensitive
- * and can be prefixed with "DEBUG_" or used without it.
- *
- * @param level_name Case-insensitive debug level name string.
- * @return Corresponding debug level ID, or -1 if the level name is not recognized.
- */
-LIBPLCTAG_EXPERIMENTAL
-LIB_EXPORT int plc_tag_debug_level_id(const char *level_name);
 
 
 /**
@@ -341,6 +300,21 @@ LIB_EXPORT int32_t plc_tag_create_ex(const char *attrib_str,
 
 
 /**
+ * @brief Create a new tag based on an existing tag.
+ *
+ * @param src_tag_id Source tag ID to copy attributes from.
+ * @param attrib_str additional attributes for a tag based on the protocol and device of the source tag.
+ * @param tag_callback_func Callback function for tag events.
+ * @param userdata User-supplied data pointer passed to callback.
+ * @param timeout Milliseconds to wait for creation (0 = return immediately).
+ * @return Opaque tag handle (>0 on success, <0 on error with PLCTAG_ERR_xyz code).
+ */
+LIB_EXPORT int32_t plc_tag_create_from_tag(int32_t src_tag_id, const char *attrib_str,
+                                           void (*tag_callback_func)(int32_t tag_id, int event, int status, void *userdata),
+                                           void *userdata, int timeout);
+
+
+/**
  * @brief Shut down the library and release all resources.
  *
  * Some systems may not call the atexit() handlers. In those cases, wrappers should
@@ -372,14 +346,24 @@ LIB_EXPORT void plc_tag_shutdown(void);
  */
 
 typedef enum {
-    PLCTAG_EVENT_READ_STARTED = 1,    /*!< Read operation started */
-    PLCTAG_EVENT_READ_COMPLETED = 2,  /*!< Read operation completed */
-    PLCTAG_EVENT_WRITE_STARTED = 3,   /*!< Write operation started */
-    PLCTAG_EVENT_WRITE_COMPLETED = 4, /*!< Write operation completed */
-    PLCTAG_EVENT_ABORTED = 5,         /*!< Operation aborted */
-    PLCTAG_EVENT_DESTROYED = 6,       /*!< Tag destroyed */
-    PLCTAG_EVENT_CREATED = 7,         /*!< Tag created */
-    PLCTAG_EVENT_MAX = 8              /*!< Maximum event type value */
+    PLCTAG_EVENT_READ_STARTED = 1,    /* Read operation started */
+    PLCTAG_EVENT_READ_COMPLETED = 2,  /* Read operation completed */
+    PLCTAG_EVENT_WRITE_STARTED = 3,   /* Write operation started */
+    PLCTAG_EVENT_WRITE_COMPLETED = 4, /* Write operation completed */
+    PLCTAG_EVENT_ABORTED = 5,         /* Operation aborted */
+    PLCTAG_EVENT_DESTROYED = 6,       /* Tag destroyed */
+    PLCTAG_EVENT_CREATED = 7,         /* Tag created */
+
+    /* Connection status events */
+    PLCTAG_EVENT_CONN_STATUS_OFFSET = 100,        /* Base offset for connection status change events */
+    PLCTAG_EVENT_CONN_STATUS_UP = 100,            /* Connected and ready for operations */
+    PLCTAG_EVENT_CONN_STATUS_DOWN = 101,          /* Not connected */
+    PLCTAG_EVENT_CONN_STATUS_DISCONNECTING = 102, /* In process of disconnecting */
+    PLCTAG_EVENT_CONN_STATUS_CONNECTING = 103,    /* In process of connecting */
+    PLCTAG_EVENT_CONN_STATUS_IDLE_WAIT = 104,     /* Waiting to reconnect after idle disconnect */
+    PLCTAG_EVENT_CONN_STATUS_ERR_WAIT = 105,      /* Waiting to reconnect after error */
+
+    PLCTAG_EVENT_MAX = 105 /* Maximum event type value */
 } plctag_event_t;
 
 /**
