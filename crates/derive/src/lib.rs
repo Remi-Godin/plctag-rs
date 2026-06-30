@@ -60,8 +60,6 @@ MIT
 */
 #![warn(missing_docs)]
 
-extern crate proc_macro;
-
 mod decode_derive;
 mod encode_derive;
 mod shared;

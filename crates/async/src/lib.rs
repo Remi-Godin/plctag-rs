@@ -50,7 +50,6 @@ MIT
 */
 #![warn(missing_docs)]
 
-extern crate plctag_core;
 mod entry;
 
 pub use entry::AsyncTag;

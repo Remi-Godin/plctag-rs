@@ -51,7 +51,6 @@ MIT
 */
 #![warn(missing_docs)]
 
-extern crate plctag_core;
 #[macro_use]
 extern crate log;
 
