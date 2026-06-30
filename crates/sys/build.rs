@@ -48,9 +48,56 @@ fn main() {
             config.static_crt(true);
             config.define("LIBPLCTAG_STATIC", "ON");
         }
+
+        // Force the layout definition at the CMake layer
+        config.define("CMAKE_INSTALL_LIBDIR", "lib");
+
         let out_dir = config.build();
         eprintln!("cmake build out dir: {:?}", &out_dir);
-        // let header_file = source_dir.join("src").join("lib").join("libplctag.h");
+
+        // --- HARMONIZATION LAYER START ---
+        // Ensure out/lib directory explicitly exists
+        let target_lib_dir = out_dir.join("lib");
+        let _ = fs::create_dir_all(&target_lib_dir);
+
+        // Systematically scan out_dir, out_dir/lib, and out_dir/lib64 for any variant of the static library
+        let search_places = vec![
+            out_dir.clone(),
+            target_lib_dir.clone(),
+            out_dir.join("lib64"),
+        ];
+
+        let target_static_file = target_lib_dir.join("libplctag.a");
+
+        if !target_static_file.exists() {
+            let mut found = false;
+            for place in search_places {
+                if !place.exists() {
+                    continue;
+                }
+
+                // Check all possible names the C project might call a static archive
+                for file_name in &[
+                    "libplctag.a",
+                    "libplctag_static.a",
+                    "plctag.a",
+                    "plctag_static.a",
+                ] {
+                    let potential_src = place.join(file_name);
+                    if potential_src.is_file() {
+                        eprintln!("Found static binary at: {:?}", potential_src);
+                        let _ = fs::copy(&potential_src, &target_static_file);
+                        found = true;
+                        break;
+                    }
+                }
+                if found {
+                    break;
+                }
+            }
+        }
+        // --- HARMONIZATION LAYER END ---
+
         let header_file = out_dir.join("include").join("libplctag.h");
 
         let header_file = if header_file.exists() {
@@ -167,8 +214,6 @@ fn dir_copy(source_dir: impl AsRef<Path>, dst_dir: impl AsRef<Path>) -> io::Resu
         fs::create_dir(dst_dir)?;
         fs::set_permissions(dst_dir, source_dir.metadata()?.permissions())?;
     }
-    //eprintln!("cp src: {}", source_dir.display());
-    //eprintln!("cp dst: {}", dst_dir.display());
     for entry in (source_dir.read_dir()?).flatten() {
         if let Ok(meta) = entry.metadata() {
             let name = entry.file_name();
@@ -176,7 +221,6 @@ fn dir_copy(source_dir: impl AsRef<Path>, dst_dir: impl AsRef<Path>) -> io::Resu
                 continue;
             }
             let dst = dst_dir.join(name);
-            //eprintln!("{}", dst.display());
 
             if meta.is_dir() {
                 dir_copy(entry.path(), dst)?;
