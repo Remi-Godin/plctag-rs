@@ -8,8 +8,8 @@ use crate::{ffi, Result};
 use std::ffi::CStr;
 use std::fmt;
 
-pub const PLCTAG_STATUS_OK: i32 = ffi::plctag_error_code_t::PLCTAG_STATUS_OK as i32;
-pub const PLCTAG_STATUS_PENDING: i32 = ffi::plctag_error_code_t::PLCTAG_STATUS_PENDING as i32;
+pub const PLCTAG_STATUS_OK: i32 = ffi::plctag_error_code_t::PLCTAG_STATUS_OK;
+pub const PLCTAG_STATUS_PENDING: i32 = ffi::plctag_error_code_t::PLCTAG_STATUS_PENDING;
 
 /// plc tag error code representations
 #[derive(Copy, Clone)]

@@ -116,7 +116,7 @@ fn get_tag_attr(attr: &Attribute, ctx: &Context) -> syn::Result<TagAttr> {
 
     Ok(TagAttr {
         offset,
-        size,
+        _size: size,
         encode_fn,
         decode_fn,
     })
@@ -124,7 +124,7 @@ fn get_tag_attr(attr: &Attribute, ctx: &Context) -> syn::Result<TagAttr> {
 
 pub struct TagAttr {
     pub offset: Option<u32>,
-    pub size: Option<u32>,
+    pub _size: Option<u32>,
     pub encode_fn: Option<syn::ExprPath>,
     pub decode_fn: Option<syn::ExprPath>,
 }

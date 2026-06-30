@@ -132,21 +132,21 @@ impl PathBuilder {
     }
 
     /// - EIP
-    /// IP address or host name.
-    /// This tells the library what host name or IP address to use for the PLC or the gateway to the PLC (in the case that the PLC is remote).
+    ///   IP address or host name.
+    ///   This tells the library what host name or IP address to use for the PLC or the gateway to the PLC (in the case that the PLC is remote).
     /// - ModBus
-    /// Required IP address or host name and optional port
-    /// This tells the library what host name or IP address to use for the PLC. Can have an optional port at the end, e.g. gateway=10.1.2.3:502 where the :502 part specifies the port.
+    ///   Required IP address or host name and optional port
+    ///   This tells the library what host name or IP address to use for the PLC. Can have an optional port at the end, e.g. gateway=10.1.2.3:502 where the :502 part specifies the port.
     pub fn gateway(&mut self, gateway: impl AsRef<str>) -> &mut Self {
         self.gateway = Some(gateway.as_ref().to_owned());
         self
     }
 
     /// - EIP
-    /// This is the full name of the tag. For program tags, prepend Program:<program name>. where <program name> is the name of the program in which the tag is created
+    ///   This is the full name of the tag. For program tags, prepend Program:<program name>. where <program name> is the name of the program in which the tag is created
     /// - ModBus
-    /// Required the type and first register number of a tag, e.g. co42 for coil 42 (counts from zero).
-    /// The supported register type prefixes are co for coil, di for discrete inputs, hr for holding registers and ir for input registers. The type prefix must be present and the register number must be greater than or equal to zero and less than or equal to 65535. Modbus examples: co21 - coil 21, di22 - discrete input 22, hr66 - holding register 66, ir64000 - input register 64000.
+    ///   Required the type and first register number of a tag, e.g. co42 for coil 42 (counts from zero).
+    ///   The supported register type prefixes are co for coil, di for discrete inputs, hr for holding registers and ir for input registers. The type prefix must be present and the register number must be greater than or equal to zero and less than or equal to 65535. Modbus examples: co21 - coil 21, di22 - discrete input 22, hr66 - holding register 66, ir64000 - input register 64000.
     ///
     /// you might want to use `register()` instead of `name()` for Modbus
     pub fn name(&mut self, name: impl AsRef<str>) -> &mut Self {
@@ -161,11 +161,11 @@ impl PathBuilder {
     }
 
     /// - EIP
-    /// AB: CIP path to PLC CPU. I.e. 1,0.
-    /// This attribute is required for CompactLogix/ControlLogix tags and for tags using a DH+ protocol bridge (i.e. a DHRIO module) to get to a PLC/5, SLC 500, or MicroLogix PLC on a remote DH+ link. The attribute is ignored if it is not a DH+ bridge route, but will generate a warning if debugging is active. Note that Micro800 connections must not have a path attribute.
+    ///   AB: CIP path to PLC CPU. I.e. 1,0.
+    ///   This attribute is required for CompactLogix/ControlLogix tags and for tags using a DH+ protocol bridge (i.e. a DHRIO module) to get to a PLC/5, SLC 500, or MicroLogix PLC on a remote DH+ link. The attribute is ignored if it is not a DH+ bridge route, but will generate a warning if debugging is active. Note that Micro800 connections must not have a path attribute.
     /// - ModBus
-    /// Required The server/unit ID. Must be an integer value between 0 and 255.
-    /// Servers may support more than one unit or may bridge to other units.
+    ///   Required The server/unit ID. Must be an integer value between 0 and 255.
+    ///   Servers may support more than one unit or may bridge to other units.
     pub fn path(&mut self, path: impl AsRef<str>) -> &mut Self {
         self.path = Some(path.as_ref().to_owned());
         self

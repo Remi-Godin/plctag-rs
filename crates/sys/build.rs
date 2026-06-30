@@ -4,10 +4,6 @@
 // Copyright: 2022, Joylei <leingliu@gmail.com>
 // License: MIT
 
-extern crate bindgen;
-extern crate cmake;
-extern crate pkg_config;
-
 use std::{
     env, fs, io,
     path::{Path, PathBuf},
@@ -21,7 +17,7 @@ fn main() {
     // check if static build in the order of:
     // PLCTAG_STATIC, PLCTAG_DYNAMIC, rustflags: +crt-static
     let is_static = get_env_bool("LIBPLCTAG_STATIC").unwrap_or(true)
-        || get_env_bool("LIBPLCTAG_DYNAMIC").map_or(false, |v| !v)
+        || get_env_bool("LIBPLCTAG_DYNAMIC").is_some_and(|v| !v)
         || cfg!(target_feature = "crt-static");
 
     if is_static {
@@ -227,7 +223,7 @@ fn dir_copy(source_dir: impl AsRef<Path>, dst_dir: impl AsRef<Path>) -> io::Resu
             if meta.is_dir() {
                 dir_copy(entry.path(), dst)?;
             } else if !dst.exists() || is_file_newer(entry.path().as_ref(), dst.as_ref()) {
-                fs::copy(&entry.path(), &dst)?;
+                fs::copy(entry.path(), &dst)?;
             }
         }
     }
